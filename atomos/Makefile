@@ -64,7 +64,16 @@ APPS_C = apps/terminal/terminal.c \
          apps/javierapp/javierapp.c \
          apps/imageview/imageview.c \
          apps/music/music.c \
-         apps/ai/ai_assistant.c
+         apps/ai/ai_assistant.c \
+         apps/games/games.c \
+         apps/games/arcade.c \
+         apps/games/puzzle.c \
+         apps/games/cards.c \
+         apps/games/words.c \
+         apps/games/sports.c \
+         apps/daw/daw.c \
+         apps/daw/beatmaker.c \
+         apps/utils/apps.c
 
 COMPAT_C = $(COMPAT_DIR)/linux/linux_compat.c \
            $(COMPAT_DIR)/windows/windows_compat.c
@@ -108,6 +117,9 @@ $(BUILD_DIR):
 	@mkdir -p $(BUILD_DIR)/apps/imageview
 	@mkdir -p $(BUILD_DIR)/apps/music
 	@mkdir -p $(BUILD_DIR)/apps/ai
+	@mkdir -p $(BUILD_DIR)/apps/games
+	@mkdir -p $(BUILD_DIR)/apps/daw
+	@mkdir -p $(BUILD_DIR)/apps/utils
 
 # Compile bootloader
 $(BUILD_DIR)/boot.bin: $(BOOT_DIR)/boot.asm | $(BUILD_DIR)
