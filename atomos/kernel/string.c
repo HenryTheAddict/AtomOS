@@ -144,6 +144,17 @@ char *strcat(char *dest, const char *src) {
 }
 
 /*
+ * Concatenate strings with limit
+ */
+char *strncat(char *dest, const char *src, size_t count) {
+    char *d = dest;
+    while (*d) d++;
+    while (count-- && (*d++ = *src++));
+    *d = '\0';
+    return dest;
+}
+
+/*
  * Find character in string
  */
 char *strchr(const char *str, int c) {
@@ -315,4 +326,171 @@ int tolower(int c) {
         return c - 'A' + 'a';
     }
     return c;
+}
+
+/*
+ * snprintf - formatted string output with size limit
+ */
+#include <stdarg.h>
+
+int snprintf(char *buf, size_t size, const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    
+    char *p = buf;
+    char *end = buf + size - 1;
+    
+    if (size == 0) {
+        va_end(args);
+        return 0;
+    }
+    
+    while (*fmt && p < end) {
+        if (*fmt != '%') {
+            *p++ = *fmt++;
+            continue;
+        }
+        
+        fmt++;
+        
+        /* Parse format specifier */
+        int width = 0;
+        bool zero_pad = false;
+        bool left_align = false;
+        
+        if (*fmt == '-') {
+            left_align = true;
+            fmt++;
+        }
+        if (*fmt == '0') {
+            zero_pad = true;
+            fmt++;
+        }
+        while (*fmt >= '0' && *fmt <= '9') {
+            width = width * 10 + (*fmt - '0');
+            fmt++;
+        }
+        
+        switch (*fmt) {
+            case 'd':
+            case 'i': {
+                int val = va_arg(args, int);
+                char num[32];
+                int i = 0;
+                bool neg = val < 0;
+                if (neg) val = -val;
+                do {
+                    num[i++] = '0' + val % 10;
+                    val /= 10;
+                } while (val);
+                if (neg) num[i++] = '-';
+                
+                int pad = width - i;
+                if (!left_align && pad > 0) {
+                    while (pad-- > 0 && p < end)
+                        *p++ = zero_pad ? '0' : ' ';
+                }
+                while (i > 0 && p < end)
+                    *p++ = num[--i];
+                if (left_align && pad > 0) {
+                    while (pad-- > 0 && p < end)
+                        *p++ = ' ';
+                }
+                break;
+            }
+            case 'u': {
+                unsigned int val = va_arg(args, unsigned int);
+                char num[32];
+                int i = 0;
+                do {
+                    num[i++] = '0' + val % 10;
+                    val /= 10;
+                } while (val);
+                
+                int pad = width - i;
+                if (!left_align && pad > 0) {
+                    while (pad-- > 0 && p < end)
+                        *p++ = zero_pad ? '0' : ' ';
+                }
+                while (i > 0 && p < end)
+                    *p++ = num[--i];
+                if (left_align && pad > 0) {
+                    while (pad-- > 0 && p < end)
+                        *p++ = ' ';
+                }
+                break;
+            }
+            case 'x':
+            case 'X': {
+                unsigned int val = va_arg(args, unsigned int);
+                const char *hex = (*fmt == 'x') ? "0123456789abcdef" : "0123456789ABCDEF";
+                char num[16];
+                int i = 0;
+                do {
+                    num[i++] = hex[val % 16];
+                    val /= 16;
+                } while (val);
+                
+                int pad = width - i;
+                if (!left_align && pad > 0) {
+                    while (pad-- > 0 && p < end)
+                        *p++ = zero_pad ? '0' : ' ';
+                }
+                while (i > 0 && p < end)
+                    *p++ = num[--i];
+                break;
+            }
+            case 's': {
+                char *s = va_arg(args, char *);
+                if (!s) s = "(null)";
+                int len = strlen(s);
+                int pad = width - len;
+                if (!left_align && pad > 0) {
+                    while (pad-- > 0 && p < end)
+                        *p++ = ' ';
+                }
+                while (*s && p < end)
+                    *p++ = *s++;
+                if (left_align && pad > 0) {
+                    while (pad-- > 0 && p < end)
+                        *p++ = ' ';
+                }
+                break;
+            }
+            case 'c':
+                *p++ = (char)va_arg(args, int);
+                break;
+            case 'p': {
+                unsigned int val = (unsigned int)va_arg(args, void *);
+                if (p + 2 < end) {
+                    *p++ = '0';
+                    *p++ = 'x';
+                }
+                const char *hexchars = "0123456789abcdef";
+                char num[16];
+                int i = 0;
+                do {
+                    num[i++] = hexchars[val % 16];
+                    val /= 16;
+                } while (val);
+                while (i < 8) num[i++] = '0';
+                while (i > 0 && p < end)
+                    *p++ = num[--i];
+                break;
+            }
+            case '%':
+                *p++ = '%';
+                break;
+            default:
+                *p++ = '%';
+                if (p < end) *p++ = *fmt;
+                break;
+        }
+        fmt++;
+    }
+    
+    *p = '\0';
+    va_end(args);
+    
+    return (int)(p - buf);
 }

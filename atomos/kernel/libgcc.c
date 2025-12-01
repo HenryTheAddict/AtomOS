@@ -83,3 +83,39 @@ int64_t __moddi3(int64_t num, int64_t den) {
     
     return negative ? -(int64_t)result : (int64_t)result;
 }
+
+/*
+ * 64-bit unsigned division with remainder
+ * Used for simultaneous div and mod operations
+ */
+uint64_t __udivmoddi4(uint64_t num, uint64_t den, uint64_t *rem) {
+    uint64_t quot = 0;
+    uint64_t bit = 1;
+    
+    if (den == 0) {
+        if (rem) *rem = 0;
+        return 0;  /* Division by zero */
+    }
+    
+    /* Align divisor to highest bit of numerator */
+    while (den <= num && !(den & (1ULL << 63))) {
+        den <<= 1;
+        bit <<= 1;
+    }
+    
+    /* Perform division */
+    while (bit) {
+        if (num >= den) {
+            num -= den;
+            quot |= bit;
+        }
+        den >>= 1;
+        bit >>= 1;
+    }
+    
+    if (rem) {
+        *rem = num;
+    }
+    
+    return quot;
+}

@@ -45,6 +45,7 @@ KERNEL_C = $(KERNEL_DIR)/main.c \
            $(KERNEL_DIR)/mm/pmm.c \
            $(KERNEL_DIR)/mm/vmm.c \
            $(KERNEL_DIR)/mm/heap.c \
+           $(KERNEL_DIR)/mm/smart_ram.c \
            $(KERNEL_DIR)/drivers/video/vga.c \
            $(KERNEL_DIR)/drivers/video/framebuffer.c \
            $(KERNEL_DIR)/drivers/keyboard/keyboard.c \
@@ -54,7 +55,16 @@ KERNEL_C = $(KERNEL_DIR)/main.c \
            $(KERNEL_DIR)/process/process.c \
            $(KERNEL_DIR)/syscall/syscall.c
 
-JAVIER_C = $(JAVIER_DIR)/core/javier.c
+JAVIER_C = $(JAVIER_DIR)/core/javier.c \
+           $(JAVIER_DIR)/core/graphics3d.c \
+           $(JAVIER_DIR)/core/colors.c
+
+APPS_C = apps/terminal/terminal.c \
+         apps/javi/javi.c \
+         apps/javierapp/javierapp.c \
+         apps/imageview/imageview.c \
+         apps/music/music.c \
+         apps/ai/ai_assistant.c
 
 COMPAT_C = $(COMPAT_DIR)/linux/linux_compat.c \
            $(COMPAT_DIR)/windows/windows_compat.c
@@ -62,6 +72,7 @@ COMPAT_C = $(COMPAT_DIR)/linux/linux_compat.c \
 # Object files
 KERNEL_OBJ = $(patsubst %.c,$(BUILD_DIR)/%.o,$(KERNEL_C)) \
              $(patsubst %.c,$(BUILD_DIR)/%.o,$(JAVIER_C)) \
+             $(patsubst %.c,$(BUILD_DIR)/%.o,$(APPS_C)) \
              $(patsubst %.c,$(BUILD_DIR)/%.o,$(COMPAT_C)) \
              $(patsubst %.asm,$(BUILD_DIR)/%.o,$(KERNEL_ASM))
 
@@ -91,6 +102,12 @@ $(BUILD_DIR):
 	@mkdir -p $(BUILD_DIR)/$(JAVIER_DIR)/core
 	@mkdir -p $(BUILD_DIR)/$(COMPAT_DIR)/linux
 	@mkdir -p $(BUILD_DIR)/$(COMPAT_DIR)/windows
+	@mkdir -p $(BUILD_DIR)/apps/terminal
+	@mkdir -p $(BUILD_DIR)/apps/javi
+	@mkdir -p $(BUILD_DIR)/apps/javierapp
+	@mkdir -p $(BUILD_DIR)/apps/imageview
+	@mkdir -p $(BUILD_DIR)/apps/music
+	@mkdir -p $(BUILD_DIR)/apps/ai
 
 # Compile bootloader
 $(BUILD_DIR)/boot.bin: $(BOOT_DIR)/boot.asm | $(BUILD_DIR)

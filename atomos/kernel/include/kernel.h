@@ -134,8 +134,12 @@ char *strncpy(char *dest, const char *src, size_t count);
 int strcmp(const char *s1, const char *s2);
 int strncmp(const char *s1, const char *s2, size_t count);
 char *strcat(char *dest, const char *src);
+char *strncat(char *dest, const char *src, size_t count);
 char *strchr(const char *str, int c);
 char *strrchr(const char *str, int c);
+char *strstr(const char *haystack, const char *needle);
+int atoi(const char *str);
+int snprintf(char *buf, size_t size, const char *fmt, ...);
 
 /* Global boot info */
 extern boot_info_t *g_boot_info;
