@@ -67,6 +67,21 @@ make install-deps
 
 ### Build
 
+**Using Python Scripts (Recommended):**
+
+```bash
+# Build the OS
+python build.py
+
+# Build with clean
+python build.py --clean
+
+# Build with verbose output
+python build.py --verbose
+```
+
+**Using Make:**
+
 ```bash
 # Build everything
 make
@@ -89,7 +104,29 @@ make clean
 
 ## 💻 Running
 
-### In QEMU (Recommended)
+### Using emu.py (Recommended)
+
+```bash
+# Run with serial console
+python emu.py
+
+# Run with graphical display
+python emu.py --gui
+
+# Run with debugging (GDB on port 1234)
+python emu.py --debug
+
+# Build and run in one command
+python emu.py --build --gui
+
+# Custom memory and cores
+python emu.py --memory 256M --cores 2 --gui
+
+# Enable audio (PC Speaker)
+python emu.py --gui --audio
+```
+
+### Manual QEMU Commands
 
 ```bash
 # CD-ROM mode
